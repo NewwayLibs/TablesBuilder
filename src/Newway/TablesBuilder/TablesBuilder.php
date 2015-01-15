@@ -104,7 +104,7 @@ class TablesBuilder
     }
 
     /**
-     * Add one foot column
+     * Add one footer column
      *
      * @param $text
      * @param array $attr
@@ -120,17 +120,17 @@ class TablesBuilder
     }
 
     /**
-     * @param bool $withScript
+     * @param bool $initDatatable
      * @return string
      */
-    public function make($withScript = true)
+    public function make($initDatatable = true)
     {
         $html = '<table ' . $this->attributes($this->tableAttr) . '>';
         $html .= $this->getHead();
 //        $html .= $this->getBody(); need to finish
         $html .= $this->getFoot();
         $html .= '</table>';
-        if($withScript && $id = $this->tableAttr['id'])
+        if($initDatatable && $id = $this->tableAttr['id'])
             $html .= '<script>$(document).ready(function () {
                 var t = $("#' . $id . '").DataTable({
                   sPaginationType: "bootstrap_alt",
@@ -163,7 +163,6 @@ class TablesBuilder
         if (count((array)$this->headColumns) > 0) {
             $thead .= '<thead><tr' . $this->attributes($this->headRowAttr) . '>';
             foreach ($this->headColumns as $col) {
-                $this->validateColumn($col);
                 $thead .= '<th ' . $this->attributes($col['attr']) . '>' . $col['text'] . '</th>';
             }
             $thead .= '</tr></thead>';
@@ -182,7 +181,6 @@ class TablesBuilder
         if (count((array)$this->headColumns) > 0) {
             $tfoot .= '<tfoot><tr ' . $this->attributes($this->footRowAttr) . '>';
             foreach ($this->footColumns as $col) {
-                $this->validateColumn($col);
                 $tfoot .= '<th ' . $this->attributes($col['attr']) . '>' . $col['text'] . '</th>';
             }
             $tfoot .= '</tr></tfoot>';
@@ -204,8 +202,8 @@ class TablesBuilder
         // as this will convert HTML attributes such as "required" to a correct
         // form like required="required" instead of using incorrect numerics.
         foreach ((array)$attributes as $key => $value) {
-            $element = $this->attributeElement($key, $value);
-            if (!is_null($element)) {
+            $element = $this->getAttributeExpression($key, $value);
+            if ($element) {
                 $html[] = $element;
             }
         }
@@ -214,13 +212,13 @@ class TablesBuilder
     }
 
     /**
-     * Build a single attribute element.
+     * Build a single attribute expression element.
      *
      * @param  string $key
      * @param  string $value
      * @return string
      */
-    private function attributeElement($key, $value)
+    private function getAttributeExpression($key, $value)
     {
         if (is_numeric($key)) {
             $key = $value;
@@ -228,20 +226,7 @@ class TablesBuilder
         if (!is_null($value)) {
             return $key . '="' . e($value) . '"';
         }
+        return false;
     }
 
-    /**
-     * @param $col
-     *
-     * Validate column values
-     */
-    private function validateColumn(&$col)
-    {
-        if (empty($col['attr'])) {
-            $col['attr'] = [];
-        }
-        if (empty($col['text'])) {
-            $col['text'] = '';
-        }
-    }
 }
