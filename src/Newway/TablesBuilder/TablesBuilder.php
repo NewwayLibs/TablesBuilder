@@ -1,4 +1,4 @@
-<?php namespace App\Helpers\TablesBuilder;
+<?php namespace Newway\TablesBuilder;
 
 /**
  * Class TablesBuilder
