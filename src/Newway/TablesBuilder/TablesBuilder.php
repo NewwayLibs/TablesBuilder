@@ -8,11 +8,11 @@
  */
 class TablesBuilder
 {
-    private $tableAttr = [];
-    private $headColumns = [];
-    private $footColumns = [];
-    private $headRowAttr = [];
-    private $footRowAttr = [];
+    protected $tableAttr = [];
+    protected $headColumns = [];
+    protected $footColumns = [];
+    protected $headRowAttr = [];
+    protected $footRowAttr = [];
 
     private function __construct()
     {
@@ -42,77 +42,44 @@ class TablesBuilder
      * second - text and attributes
      * third - empty <td></td>
      *
+     * @param string $section
      * @param array $columns
      * @return $this
      */
-    public function addHead(array $columns)
+    protected  function addSection($section, array $columns)
     {
-        $this->headColumns = $columns;
+        foreach($columns as $column)
+            $this->addColumnInSection(
+                $section,
+                !empty($column['text']) ? $column['text'] : '',
+                !empty($column['attr']) ? $column['attr'] : []
+            );
         return $this;
     }
 
     /**
-     * Push array of columns here
+     * Add attributes to header or footer <tr>
      *
-     * @param array $columns
-     * @return $this
-     */
-    public function addFoot(array $columns)
-    {
-        $this->footColumns = $columns;
-        return $this;
-    }
-
-    /**
-     * Add attributes to head <tr>
-     *
+     * @param $section
      * @param array $attr
      * @return $this
      */
-    public function addHeadAttr(array $attr)
+    protected function addAttrToSection($section, array $attr)
     {
-        $this->headRowAttr = $attr;
+        $this->{"{$section}RowAttr"} = $attr;
         return $this;
     }
 
     /**
-     * Add attributes to foot <tr>
-     *
-     * @param array $attr
-     * @return $this
-     */
-    public function addFootAttr(array $attr)
-    {
-        $this->footRowAttr = $attr;
-        return $this;
-    }
-
-    /**
-     * Add one head column
-     *
+     * Add one header or footer column
+     * @param $section
      * @param $text
      * @param array $attr
      * @return $this
      */
-    public function addHeadColumn($text, array $attr = [])
+    protected function addColumnInSection($section, $text, array $attr = [])
     {
-        $this->headColumns[] = [
-            'attr' => $attr,
-            'text' => $text,
-        ];
-        return $this;
-    }
-
-    /**
-     * Add one footer column
-     *
-     * @param $text
-     * @param array $attr
-     * @return $this
-     */
-    public function addFootColumn($text, array $attr = [])
-    {
-        $this->footColumns[] = [
+        $this->{"{$section}Columns"}[] = [
             'attr' => $attr,
             'text' => $text,
         ];
@@ -126,9 +93,9 @@ class TablesBuilder
     public function make($initDatatable = true)
     {
         $html = '<table ' . $this->attributes($this->tableAttr) . '>';
-        $html .= $this->getHead();
+        $html .= $this->getSection('head');
 //        $html .= $this->getBody(); need to finish
-        $html .= $this->getFoot();
+        $html .= $this->getSection('foot');
         $html .= '</table>';
         if($initDatatable && $id = $this->tableAttr['id'])
             $html .= '<script>$(document).ready(function () {
@@ -154,38 +121,21 @@ class TablesBuilder
 
     /**
      * Generate table header
-     *
+     * @param string $section
      * @return string
      */
-    private function getHead()
+    private function getSection($section)
     {
-        $thead = '';
-        if (count((array)$this->headColumns) > 0) {
-            $thead .= '<thead><tr' . $this->attributes($this->headRowAttr) . '>';
-            foreach ($this->headColumns as $col) {
-                $thead .= '<th ' . $this->attributes($col['attr']) . '>' . $col['text'] . '</th>';
+        $html = '';
+        $sectionArrayName = "{$section}Columns";
+        if (count((array)$this->$sectionArrayName) > 0) {
+            $html .= "<t$section><tr {$this->attributes($this->{"{$section}RowAttr"})}>";
+            foreach ($this->$sectionArrayName as $col) {
+                $html .= "<th {$this->attributes($col['attr'])}>{$col['text']}</th>";
             }
-            $thead .= '</tr></thead>';
+            $html .= "</tr></t$section>";
         }
-        return $thead;
-    }
-
-    /**
-     * Generate table footer
-     *
-     * @return string
-     */
-    private function getFoot()
-    {
-        $tfoot = '';
-        if (count((array)$this->headColumns) > 0) {
-            $tfoot .= '<tfoot><tr ' . $this->attributes($this->footRowAttr) . '>';
-            foreach ($this->footColumns as $col) {
-                $tfoot .= '<th ' . $this->attributes($col['attr']) . '>' . $col['text'] . '</th>';
-            }
-            $tfoot .= '</tr></tfoot>';
-        }
-        return $tfoot;
+        return $html;
     }
 
     /**
@@ -227,6 +177,25 @@ class TablesBuilder
             return $key . '="' . e($value) . '"';
         }
         return false;
+    }
+
+    /**
+     * @param $name
+     * @param array $arguments
+     * @throws \Exception
+     */
+    public function __call($name, array $arguments) {
+        if(preg_match('/^add(Head|Foot)Column$/', $name, $matches)) {
+            return $this->addColumnInSection(strtolower($matches[1]), $arguments[0], $arguments[1]);
+        }
+        if(preg_match('/^add(Head|Foot)Attr/', $name, $matches)) {
+            return $this->addAttrToSection(strtolower($matches[1]), $arguments[0], $arguments[1]);
+        }
+        if(preg_match('/^add(Head|Foot)/', $name, $matches)) {
+            return $this->addSection(strtolower($matches[1]), $arguments[0]);
+        }
+
+        throw new \Exception("Method $name not found in class " . __CLASS__);
     }
 
 }
