@@ -122,7 +122,7 @@ class TablesBuilder
                             "first": "' . Lang::trans('tables_builder::datatables.paginate.first') . '",
                             "last": "' . Lang::trans('tables_builder::datatables.paginate.last') . '",
                             "next": "' . Lang::trans('tables_builder::datatables.paginate.next') . '",
-                            "prev": "' . Lang::trans('tables_builder::datatables.paginate.prev') . '"
+                            "previous": "' . Lang::trans('tables_builder::datatables.paginate.previous') . '"
                         }
                     },
                     columnDefs: [{targets: "_all", defaultContent: ""}],

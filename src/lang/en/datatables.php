@@ -11,6 +11,6 @@ return array (
             'first' => 'First',
             'last' => 'Last',
             'next' => 'Next',
-            'prev' => 'Prev',
+            'previous' => 'Previous',
         ],
 );
