@@ -1,5 +1,7 @@
 <?php namespace Newway\TablesBuilder;
 
+use Lang;
+
 /**
  * Class TablesBuilder
  * Generate table html
@@ -88,6 +90,7 @@ class TablesBuilder
 
     /**
      * @param bool $initDatatable
+     * @param bool $useLaravelLang
      * @return string
      */
     public function make($initDatatable = true)
@@ -97,18 +100,35 @@ class TablesBuilder
 //        $html .= $this->getBody(); need to finish
         $html .= $this->getSection('foot');
         $html .= '</table>';
+        $translations = '
+
+        ';
         if($initDatatable && $id = $this->tableAttr['id'])
             $html .= '<script>$(document).ready(function () {
                 var t = $("#' . $id . '").DataTable({
-                  sPaginationType: "bootstrap_alt",
-                  bProcessing: !0,
-                  bServerSide: !0,
-                  ajax: "",
-                  sAjaxSource: "",
-                  columnDefs: [{targets: "_all", defaultContent: ""}],
-                  fnDrawCallback: function () {
-                    return initToggles()
-                  }
+                    sPaginationType: "bootstrap_alt",
+                    bProcessing: !0,
+                    bServerSide: !0,
+                    ajax: "",
+                    sAjaxSource: "",
+                    "language": {
+                        "lengthMenu": "' . Lang::trans('tables_builder::datatables.lengthMenu') . '",
+                        "zeroRecords": "' . Lang::trans('tables_builder::datatables.zeroRecords') . '",
+                        "info": "' . Lang::trans('tables_builder::datatables.info') . '",
+                        "infoEmpty": "' . Lang::trans('tables_builder::datatables.infoEmpty') . '",
+                        "search": "' . Lang::trans('tables_builder::datatables.search') . '",
+                        "infoFiltered": "' . Lang::trans('tables_builder::datatables.infoFiltered') . '",
+                        "paginate": {
+                            "first": "' . Lang::trans('tables_builder::datatables.paginate.first') . '",
+                            "last": "' . Lang::trans('tables_builder::datatables.paginate.last') . '",
+                            "next": "' . Lang::trans('tables_builder::datatables.paginate.next') . '",
+                            "prev": "' . Lang::trans('tables_builder::datatables.paginate.prev') . '"
+                        }
+                    },
+                    columnDefs: [{targets: "_all", defaultContent: ""}],
+                        fnDrawCallback: function () {
+                        return initToggles()
+                    }
                 });
                 t.columns().eq(0).each(function (e) {
                   return $("select", t.column(e).footer()).on("keyup change", function () {
