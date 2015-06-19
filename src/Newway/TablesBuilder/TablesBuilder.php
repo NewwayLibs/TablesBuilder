@@ -15,6 +15,7 @@ class TablesBuilder
     protected $footColumns = [];
     protected $headRowAttr = [];
     protected $footRowAttr = [];
+    protected $scriptOptions = [];
 
     private function __construct()
     {
@@ -28,12 +29,15 @@ class TablesBuilder
      * create new TablesBuilder instance
      *
      * @param array $attr
+     * @param array $scriptOptions
+     *
      * @return static
      */
-    public static function create(array $attr = [])
+    public static function create(array $attr = [], array $scriptOptions = [])
     {
         $ins = new static;
         $ins->tableAttr = $attr;
+        $ins->scriptOptions = $scriptOptions;
         return $ins;
     }
 
@@ -90,22 +94,19 @@ class TablesBuilder
 
     /**
      * @param bool $initDatatable
-     * @param bool $useLaravelLang
+     *
      * @return string
      */
     public function make($initDatatable = true)
     {
         $html = '<table ' . $this->attributes($this->tableAttr) . '>';
         $html .= $this->getSection('head');
-//        $html .= $this->getBody(); need to finish
         $html .= $this->getSection('foot');
         $html .= '</table>';
-        $translations = '
 
-        ';
         if($initDatatable && $id = $this->tableAttr['id'])
             $html .= '<script>$(document).ready(function () {
-                var t = $("#' . $id . '").DataTable({
+                var opt = {
                     sPaginationType: "bootstrap_alt",
                     bProcessing: !0,
                     bServerSide: !0,
@@ -129,7 +130,10 @@ class TablesBuilder
                         fnDrawCallback: function () {
                         return initToggles()
                     }
-                });
+                };
+                var userOpt = ' . json_encode($this->scriptOptions) . ';
+                opt = $.extend(opt, userOpt);
+                var t = $("#' . $id . '").DataTable(opt);
                 t.columns().eq(0).each(function (e) {
                   return $("select", t.column(e).footer()).on("keyup change", function () {
                     return t.column(e).search(this.value).draw()
@@ -166,7 +170,7 @@ class TablesBuilder
      */
     public function attributes($attributes)
     {
-        $html = array();
+        $html = [];
 
         // For numeric keys we will assume that the key and the value are the same
         // as this will convert HTML attributes such as "required" to a correct
@@ -200,8 +204,10 @@ class TablesBuilder
     }
 
     /**
-     * @param $name
+     * @param       $name
      * @param array $arguments
+     *
+     * @return \Newway\TablesBuilder\TablesBuilder
      * @throws \Exception
      */
     public function __call($name, array $arguments) {
