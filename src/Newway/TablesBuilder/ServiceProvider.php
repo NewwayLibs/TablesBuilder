@@ -10,6 +10,6 @@ class ServiceProvider extends SP
     }
     public function boot()
     {
-        $this->package('newway/tables_builder');
+        $this->loadTranslationsFrom(__DIR__.'/../../lang', 'tables_builder');
     }
 }
