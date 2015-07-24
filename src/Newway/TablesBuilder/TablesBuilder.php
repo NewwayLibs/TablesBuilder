@@ -111,6 +111,7 @@ class TablesBuilder
                     bServerSide: !0,
                     ajax: "",
                     sAjaxSource: "",
+                    stateSave: true,
                     "language": {
                         "lengthMenu": "' . Lang::trans('tables_builder::datatables.lengthMenu') . '",
                         "zeroRecords": "' . Lang::trans('tables_builder::datatables.zeroRecords') . '",
