@@ -131,10 +131,13 @@ class TablesBuilder
                         return initToggles()
                     }
                 });
-                t.columns().eq(0).each(function (e) {
-                  return $("select", t.column(e).footer()).on("keyup change", function () {
-                    return t.column(e).search(this.value).draw()
-                  })
+                t.columns().each(function (e) {
+                  var footer = t.column(e).footer();
+                  if(footer != null) {
+                      return $("select", t.column(e).footer()).on("keyup change", function () {
+                        return t.column(e).search(this.value).draw()
+                      })
+                  }
                 });
               })</script>';
         return $html;
