@@ -127,16 +127,16 @@ class TablesBuilder
                         }
                     },
                     columnDefs: [{targets: "_all", defaultContent: ""}],
-                        fnDrawCallback: function () {
+                    fnDrawCallback: function () {
                         return initToggles()
                     }
                 });
                 t.columns().eq(0).each(function (e) {
                   var footer = t.column(e).footer();
                   if(footer !== null) {
-                      return $("select", footer).on("keyup change", function () {
-                      console.log(this.value);
-                      console.log(this);
+                      var $inputs = $("select,input", footer);
+                      $inputs.val(t.column(e).search()).change();
+                      return $inputs.on("keyup change", function () {
                         return t.column(e).search(this.value).draw()
                       })
                   }
