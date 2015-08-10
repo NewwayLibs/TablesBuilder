@@ -131,10 +131,12 @@ class TablesBuilder
                         return initToggles()
                     }
                 });
-                t.columns().each(function (e) {
+                t.columns().eq(0).each(function (e) {
                   var footer = t.column(e).footer();
-                  if(footer != null) {
-                      return $("select", t.column(e).footer()).on("keyup change", function () {
+                  if(footer !== null) {
+                      return $("select", footer).on("keyup change", function () {
+                      console.log(this.value);
+                      console.log(this);
                         return t.column(e).search(this.value).draw()
                       })
                   }
