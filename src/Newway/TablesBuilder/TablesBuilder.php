@@ -133,6 +133,9 @@ class TablesBuilder
                     }
                 };
                 var userOpt = ' . json_encode($this->scriptOptions) . ';
+                if (datatableСallbacks) {
+                    opt = $.extend(opt, datatableСallbacks);
+                }
                 opt = $.extend(opt, userOpt);
                 var t = $("#' . $id . '").DataTable(opt);
                 t.columns().eq(0).each(function (e) {
