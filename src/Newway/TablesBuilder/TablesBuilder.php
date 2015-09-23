@@ -133,6 +133,9 @@ class TablesBuilder
                 };
                 var userOpt = ' . json_encode($this->scriptOptions) . ';
                 opt = $.extend(opt, userOpt);
+                if (typeof datatableСallbacks != "undefined") {
+                    opt = $.extend(opt, datatableСallbacks);
+                }
                 var t = $("#' . $id . '").DataTable(opt);
                 t.columns().eq(0).each(function (e) {
                   return $("select", t.column(e).footer()).on("keyup change", function () {
