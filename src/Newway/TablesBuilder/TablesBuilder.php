@@ -111,6 +111,7 @@ class TablesBuilder
                     bServerSide: !0,
                     ajax: "",
                     sAjaxSource: "",
+                    stateSave: true,
                     "language": {
                         "lengthMenu": "' . Lang::trans('tables_builder::datatables.lengthMenu') . '",
                         "zeroRecords": "' . Lang::trans('tables_builder::datatables.zeroRecords') . '",
@@ -126,14 +127,19 @@ class TablesBuilder
                         }
                     },
                     columnDefs: [{targets: "_all", defaultContent: ""}],
-                        fnDrawCallback: function () {
+                    fnDrawCallback: function () {
                         return initToggles()
                     }
                 });
                 t.columns().eq(0).each(function (e) {
-                  return $("select", t.column(e).footer()).on("keyup change", function () {
-                    return t.column(e).search(this.value).draw()
-                  })
+                  var footer = t.column(e).footer();
+                  if(footer !== null) {
+                      var $inputs = $("select,input", footer);
+                      $inputs.val(t.column(e).search()).change();
+                      return $inputs.on("keyup change", function () {
+                        return t.column(e).search(this.value).draw()
+                      })
+                  }
                 });
               })</script>';
         return $html;
