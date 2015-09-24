@@ -133,7 +133,7 @@ class TablesBuilder
                     }
                 };
                 var userOpt = ' . json_encode($this->scriptOptions) . ';
-                if (datatableСallbacks) {
+                if (typeof datatableСallbacks != "undefined") {
                     opt = $.extend(opt, datatableСallbacks);
                 }
                 opt = $.extend(opt, userOpt);
