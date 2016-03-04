@@ -139,7 +139,9 @@ class TablesBuilder
                 var t = $("#' . $id . '").DataTable(opt);
                 t.columns().eq(0).each(function (e) {
                   return $("select", t.column(e).footer()).on("keyup change", function () {
-                    return t.column(e).search(this.value).draw()
+                    if(!$(this).closest(".dataTables_length")) {
+                        return t.column(e).search(this.value).draw();
+                    }
                   })
                 });
               })</script>';
